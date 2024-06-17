@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponte de Palitos de Picolé 3D</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Inclui a biblioteca Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Inclui o controle de órbita para manipular a câmera -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        // Cria uma cena onde os objetos 3D serão colocados
+        const scene = new THREE.Scene();
+        // Configura a câmera com campo de visão de 75 graus, proporção da janela e planos de corte próximos e distantes
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        // Configura o renderizador WebGL e define o tamanho para preencher a janela
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        // Adiciona o elemento de renderização (canvas) ao corpo do documento
+        document.body.appendChild(renderer.domElement);
+
+        // Adiciona uma luz ambiente para iluminar uniformemente a cena
+        const light = new THREE.AmbientLight(0x404040);
+        scene.add(light);
+        // Adiciona uma luz pontual para iluminar a partir de uma posição específica
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+
+        // Adiciona controles de órbita para permitir que o usuário manipule a câmera com o mouse
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // Função para criar um palito de picolé
+        function createStick(length, width, height, color) {
+            const geometry = new THREE.BoxGeometry(length, height, width); // Define a geometria do palito
+            const material = new THREE.MeshBasicMaterial({ color: color }); // Define o material e a cor do palito
+            return new THREE.Mesh(geometry, material); // Cria e retorna o palito como um objeto de malha
+        }
+
+        // Define a cor e dimensões dos palitos
+        const stickColor = 0xdeb887; // Cor do palito (marrom claro)
+        const stickWidth = 0.9; // Largura do palito
+        const stickHeight = 0.5; // Altura do palito
+        const bridgeLength = 60; // Comprimento total da ponte
+        const bridgeWidth = 11.5; // Largura total da ponte
+        const bridgeHeight = 10; // Altura total da ponte
+        const extraHeight = 1.5
+        const spacingX = 6
+        const spacingZ = 1
+
+        // Cria a base inferior da ponte com palitos horizontais cruzando da esquerda para a direita
+        for (let i = 0; i <= bridgeLength; i += 6) {
+            for (let j = 9.5; j <= bridgeWidth; j += 2) {
+                const stick = createStick(stickWidth, stickHeight, 10, stickColor);
+                stick.position.set(i - bridgeLength / 2.3, -1.4, j - bridgeWidth / 1.1); // Posiciona os palitos cruzando a base
+                stick.rotation.x = Math.PI / 2; // Rotaciona o palito para ficar horizontal
+                scene.add(stick);
+            }
+        }
+        // Cria palitos horizontais na parte superior da ponte
+        for (let i = 1; i <= bridgeLength; i += spacingX) {
+             for (let j = 9.5; j <= bridgeWidth; j += spacingZ) {
+                const stickTop = createStick(stickWidth, stickHeight, 10, stickColor);
+                 stickTop.position.set(i - bridgeLength / 2.4, bridgeHeight + extraHeight, j - bridgeWidth / 1.1); // Posiciona os palitos na parte superior da ponte
+                 stickTop.rotation.x = Math.PI / 2; // Rotaciona o palito para ficar horizontal
+                 scene.add(stickTop);
+            }
+        }
+
+        // Cria os suportes laterais verticais, diagonais e horizontais
+        for (let i = 0; i <= bridgeLength; i += 11) {
+            const stickDiagonal1 = createStick(Math.sqrt(10 * 10 + 10 * 10), stickWidth, stickHeight, stickColor);
+                stickDiagonal1.position.set(i - bridgeLength / 2 + 8, bridgeHeight / 2 - 0, -bridgeWidth / 2); // Suporte diagonal esquerdo
+                stickDiagonal1.rotation.z = Math.PI / -2.6; // Rotaciona o palito para diagonal
+                scene.add(stickDiagonal1);
+
+                const stickDiagonal2 = createStick(Math.sqrt(10 * 10 + 10 * 10), stickWidth, stickHeight, stickColor);
+                stickDiagonal2.position.set(i - bridgeLength / 2 + 8, bridgeHeight / 2 - 0, bridgeWidth / 2); // Suporte diagonal direito
+                stickDiagonal2.rotation.z = Math.PI / -2.6; // Rotaciona o palito para diagonal
+                scene.add(stickDiagonal2);
+
+            if (i < bridgeLength) {
+                const stickDiagonal1 = createStick(Math.sqrt(10 * 10 + 10 * 10), stickWidth, stickHeight, stickColor);
+                stickDiagonal1.position.set(i - bridgeLength / 2 + 3.5, bridgeHeight / 2 - 0, -bridgeWidth / 2); // Suporte diagonal esquerdo
+                stickDiagonal1.rotation.z = Math.PI / 2.6; // Rotaciona o palito para diagonal
+                scene.add(stickDiagonal1);
+
+                const stickDiagonal2 = createStick(Math.sqrt(10 * 10 + 10 * 10), stickWidth, stickHeight, stickColor);
+                stickDiagonal2.position.set(i - bridgeLength / 2 + 3.5, bridgeHeight / 2 - 0, bridgeWidth / 2); // Suporte diagonal direito
+                stickDiagonal2.rotation.z = Math.PI / 2.6; // Rotaciona o palito para diagonal
+                scene.add(stickDiagonal2);
+            }
+        }
+            // Cria os palitos horizontais superiores
+        for (let i = 8; i <= bridgeLength; i += 9.1) {
+            for (let j = 0; j <= bridgeWidth; j += 2) {
+                const stickHorizontal1 = createStick(11, stickWidth, stickHeight, stickColor);
+                stickHorizontal1.position.set(i - bridgeLength / 2 + 2.1, bridgeHeight + extraHeight, -bridgeWidth / 2); // Suporte horizontal superior esquerdo
+                scene.add(stickHorizontal1);
+
+                const stickHorizontal2 = createStick(11, stickWidth, stickHeight, stickColor);
+                stickHorizontal2.position.set(i - bridgeLength / 2 + 2.1, bridgeHeight + extraHeight, bridgeWidth / 2); // Suporte horizontal superior direito
+                scene.add(stickHorizontal2);
+            }
+                // Cria os palitos horizontais inferiores
+        for (let i =3.5; i <= bridgeLength; i += 9.1) {
+            for (let j = 0; j <= bridgeWidth; j += 2) {
+                const stickHorizontalBottom1 = createStick(11, stickWidth, stickHeight, stickColor);
+                stickHorizontalBottom1.position.set(i - bridgeLength / 2 + 2.1, -extraHeight, -bridgeWidth / 2); // Suporte horizontal inferior esquerdo
+                scene.add(stickHorizontalBottom1);
+
+                const stickHorizontalBottom2 = createStick(11, stickWidth, stickHeight, stickColor);
+                stickHorizontalBottom2.position.set(i - bridgeLength / 2 + 2.1, -extraHeight, bridgeWidth / 2); // Suporte horizontal inferior direito
+                scene.add(stickHorizontalBottom2);
+            }
+        }
+    }
+        // Define a posição inicial da câmera
+        camera.position.z = 50;
+
+        // Função de animação que é chamada repetidamente para renderizar a cena
+        function animate() {
+            requestAnimationFrame(animate); // Chama a função de animação repetidamente
+            controls.update(); // Atualiza os controles de órbita
+            renderer.render(scene, camera); // Renderiza a cena a partir da posição da câmera
+        }
+        animate(); // Inicia a animação
+    </script>
+</body>
+</html>
